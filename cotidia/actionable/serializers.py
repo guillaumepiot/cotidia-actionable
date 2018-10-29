@@ -1,3 +1,5 @@
+from django.urls import reverse_lazy
+
 from rest_framework import serializers
 
 from cotidia.admin.serializers import BaseDynamicListSerializer
@@ -13,6 +15,7 @@ class ActionableDynamicListSerializer(BaseDynamicListSerializer):
         fields = [
             'uuid',
             'id',
+            'created_at',
             'message',
             'level',
             'link',
@@ -21,8 +24,11 @@ class ActionableDynamicListSerializer(BaseDynamicListSerializer):
         model = Actionable
 
     class SearchProvider:
-        filters = ['level', 'status']
+        filters = ['created_at', 'level', 'status']
         field_representation = {
+            "created_at": {
+                "label": "Date"
+            },
             "link": {
                 "display": "link"
             },
@@ -48,8 +54,26 @@ class ActionableDynamicListSerializer(BaseDynamicListSerializer):
                 options=[{"value":c[1],"label":c[0]} for c in log_level_choices],
             ),
         }
+        batch_actions = [
+            {
+                'action': 'mark-resolved',
+                'label': 'Mark solved',
+                'endpoint': reverse_lazy('actionable-api:actionable-mark-solved')
+            },
+            {
+                'action': 'mark-ignored',
+                'label': 'Ignore',
+                'endpoint': reverse_lazy('actionable-api:actionable-mark-ignored')
+            },
+            {
+                'action': 'mark-new',
+                'label': 'Mark New',
+                'endpoint': reverse_lazy('actionable-api:actionable-mark-new')
+            },
+        ]
+        enable_detail_url = False
         sidebar_filters = [
             'status',
             'level'
         ]
-        default_columns = ['level', 'message', 'link', 'status']
+        default_columns = ['created_at','level', 'message', 'link', 'status']

@@ -5,6 +5,10 @@ from cotidia.actionable.utils import count_uncomplete_actions
 
 def admin_menu(context):
     count = count_uncomplete_actions()
+
+    if count > 99:
+        count = "99+"
+
     if count:
         label = 'Actionable Items <span class="label label--primary">{}</span>'.format(count)
     else:
@@ -12,7 +16,7 @@ def admin_menu(context):
     return [
         {
             "text": mark_safe(label),
-            "icon": "users",
+            "icon": "tasks",
             "url": reverse("actionable-admin:actionable-list"),
             "permissions": ["actionable.add_actionable", "actionable.change_actionable"],
         }
